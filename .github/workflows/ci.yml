@@ -54,7 +54,7 @@ jobs:
             
             - name: Install dependencies
               run: |
-                sudo apt update && apt install -y --no-install-recommends build-essential cmake qt6-base-dev libopencv-dev libgtest-dev
+                sudo apt update && sudo apt install -y --no-install-recommends build-essential cmake qt6-base-dev libopencv-dev libgtest-dev
                 cd /usr/src/gtest/
                 sudo cmake CMakeLists.txt && sudo make
                 sudo cp ./lib/libgtest*.a /usr/lib/
