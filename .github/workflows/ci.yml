@@ -18,8 +18,7 @@ jobs:
             
             - name: Install dependencies
               run: |
-                sudo apt update
-                sudo apt install -y clang-format
+                sudo apt update && sudo apt install -y --no-install-recommends clang-format
 
             - name: Check code is correctly formatted
               working-directory: ${{ env.GITHUB_WORKSPACE }}
@@ -37,8 +36,7 @@ jobs:
             
             - name: Install dependencies
               run: |
-                sudo apt update
-                sudo apt install -y cppcheck
+                sudo apt update && sudo apt install -y --no-install-recommends cppcheck
             
             - name: Run static code analysis
               run: |
@@ -56,19 +54,15 @@ jobs:
             
             - name: Install dependencies
               run: |
-                sudo apt update
-                sudo apt install -y build-essential cmake qt6-base-dev libopencv-dev libgtest-dev
+                sudo apt update && apt install -y --no-install-recommends build-essential cmake qt6-base-dev libopencv-dev libgtest-dev
                 cd /usr/src/gtest/
-                sudo cmake CMakeLists.txt
-                sudo make
+                sudo cmake CMakeLists.txt && sudo make
                 sudo cp ./lib/libgtest*.a /usr/lib/
             
             - name: Compile the tests executable
               working-directory: ${{ env.GITHUB_WORKSPACE }}
               run: |
-                mkdir build
-                cd build
-                cmake ..
-                make Wallpepora_tests
+                mkdir build && cd build
+                cmake .. && make Wallpepora_tests
                 ./Wallpepora_tests
 
