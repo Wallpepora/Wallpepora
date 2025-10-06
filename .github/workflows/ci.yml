@@ -1,0 +1,74 @@
+name: Wallpepora CI workflow
+
+on:
+    pull_request:
+        branches:
+            - dev
+        types:
+            - opened
+            - synchronize
+
+jobs:
+    code-format:
+        name: Code format inspection
+        runs-on: ubuntu-24.04
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            
+            - name: Install dependencies
+              run: |
+                sudo apt update
+                sudo apt install -y clang-format
+
+            - name: Check code is correctly formatted
+              working-directory: ${{ env.GITHUB_WORKSPACE }}
+              run: |
+                find ./src/ ./tests/ -type f -name "*.cpp" -print0 | xargs -0 clang-format --dry-run -Werror --style=file
+                find ./include/ -type f -name "*.hpp" -print0 | xargs -0 clang-format --dry-run -Werror --style=file
+    
+    static-analysis:
+        name: Perform static code analysis
+        runs-on: ubuntu-24.04
+        needs: code-format
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            
+            - name: Install dependencies
+              run: |
+                sudo apt update
+                sudo apt install -y cppcheck
+            
+            - name: Run static code analysis
+              run: |
+                cppcheck --error-exitcode=1 --std=c++17 --language=c++ --suppress=missingIncludeSystem --inconclusive --enable=all \
+                -I /usr/include/opencv4 -I /usr/include/x86_64-linux-gnu/qt6 -I /usr/include/gtest \
+                ./include/ ./src/ ./tests/
+
+    tests:
+        name: Run tests to prevent code regression
+        runs-on: ubuntu-24.04
+        needs: static-analysis
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            
+            - name: Install dependencies
+              run: |
+                sudo apt update
+                sudo apt install -y build-essential cmake qt6-base-dev libopencv-dev libgtest-dev
+                cd /usr/src/gtest/
+                sudo cmake CMakeLists.txt
+                sudo make
+                sudo cp ./lib/libgtest*.a /usr/lib/
+            
+            - name: Compile the tests executable
+              working-directory: ${{ env.GITHUB_WORKSPACE }}
+              run: |
+                mkdir build
+                cd build
+                cmake ..
+                make Wallpepora_tests
+                ./Wallpepora_tests
+
