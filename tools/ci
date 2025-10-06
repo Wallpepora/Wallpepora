@@ -1,0 +1,13 @@
+#!/bin/sh
+
+set -e
+
+# Format code
+# Sources files (*.cpp)
+find ./src/ ./tests/ -type f -name "*.cpp" -print0 | xargs -0 clang-format --i --style=file
+# Headers (*.hpp)
+find ./include/ -type f -name "*.hpp" -print0 | xargs -0 clang-format --i --style=file
+
+cppcheck --error-exitcode=1 --std=c++17 --language=c++ --suppress=missingIncludeSystem --inconclusive --enable=all \
+    -I /usr/include/opencv4 -I /usr/include/x86_64-linux-gnu/qt6 -I /usr/include/gtest \
+    ./include/ ./src/ ./tests/
