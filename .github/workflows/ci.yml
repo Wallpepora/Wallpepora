@@ -40,7 +40,8 @@ jobs:
             
             - name: Run static code analysis
               run: |
-                cppcheck --error-exitcode=1 --std=c++17 --language=c++ --suppress=missingIncludeSystem --inline-supp --inconclusive --enable=all \
+                cppcheck --version
+                cppcheck --error-exitcode=1 --std=c++17 --language=c++ --suppress=missingIncludeSystem --inline-suppr --inconclusive --enable=all \
                 -I /usr/include/opencv4 -I /usr/include/x86_64-linux-gnu/qt6 -I /usr/include/gtest -I ./include \
                 ./include ./src ./tests
 
