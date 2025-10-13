@@ -58,3 +58,9 @@ compile_commands.json
 
 # CMake build
 build/
+
+# Python venv
+venv/
+
+# Sphinx build directory
+docs/_build/
